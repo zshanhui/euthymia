@@ -1,5 +1,6 @@
 'use client';
-// import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 /*
     notes on Reader
 
@@ -22,15 +23,15 @@ const sectionDemo = {
     translation: englishText,
 }
 
-// async function fetchTextBlockDevelopment() {
-//     // Simulate network delay
-//     await new Promise(resolve => setTimeout(resolve, 1000));
+async function fetchTextBlockDevelopment() {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-//     // Import the text blocks
-//     const { textBlockDevExample } = await import('../../../lib/db/dev.data/textBlock');
+    // Import the text blocks
+    const { textBlockDevExample } = await import('../../../lib/db/dev.data/textBlock');
     
-//     return textBlockDevExample;
-// }
+    return textBlockDevExample;
+}
 
 
 export default async function ReaderView() {
@@ -39,21 +40,21 @@ export default async function ReaderView() {
 
 function Reader({ section }: { section: any }) {
   
-  // const [textBlocks, setTextBlocks] = useState<any[]>([]);
+  const [textBlocks, setTextBlocks] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await fetchTextBlockDevelopment();
-  //     setTextBlocks(data);
-  //     console.log('Fetched text blocks:', data);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchTextBlockDevelopment();
+      setTextBlocks(data);
+      console.log('Fetched text blocks:', data);
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   return (
     <div className="max-w-prose mx-auto p-6">
-      {/* <div 
+      <div 
         className="text-lg leading-relaxed tracking-wide flex flex-col justify-center"
         style={{
           fontFamily: 'Inter, Noto Sans SC, sans-serif',
@@ -71,7 +72,7 @@ function Reader({ section }: { section: any }) {
             {paragraph}
           </p>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
