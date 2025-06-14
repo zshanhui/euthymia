@@ -5,8 +5,11 @@ import {
   text,
   timestamp,
   integer,
+  pgEnum,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { number } from 'zod';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -67,6 +70,49 @@ export const invitations = pgTable('invitations', {
   invitedAt: timestamp('invited_at').notNull().defaultNow(),
   status: varchar('status', { length: 20 }).notNull().default('pending'),
 });
+
+/* Booklets and TextBlocks */
+// const contentEnum = pgEnum('content_type', ['booklet', 'podcast']);
+const markdownStatusNew = 0;
+const markdownStatusProcessed = 1;
+export const rawMarkdownContent = pgTable('raw_markdown_content', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  bookletId: integer('booklet_id'),
+  contentType: varchar('content_type', { length: 50 }).default('booklet'),
+  markdown: text('markdown').notNull(),
+  status: integer('status').notNull().default(markdownStatusNew),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const booklets = pgTable('booklets', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  rawMarkdownContentId: integer('raw_markdown_content_id'),
+  title: varchar('title', { length: 100 }).notNull(),
+  // additional dynamic data that can be added to further categorize booklets in the future
+  // keeping the schema dynamic and flexible
+  metadata_json: jsonb('metadata_json'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const textBlocks = pgTable('text_blocks', {
+  id: serial('id').primaryKey(),
+  bookletId: integer('booklet_id')
+    .notNull()
+    .references(() => booklets.id),
+  // content is a JSON text blob containing text title, text content, translations and more
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+/* end of Booklets and TextBlocks */
 
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
